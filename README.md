@@ -1,5 +1,5 @@
 # graphql-rails-app-generator
-Generate your GraphQL rails app with one CLI command - And choose you front!
+Generate your GraphQL rails app with one CLI command - And choose your front!
 
 # Uses
 If you don't precise the front you want to generate, the generator will generate the back only.
