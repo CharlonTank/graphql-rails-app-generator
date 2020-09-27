@@ -135,6 +135,8 @@ show_and_do('Installing elm-athlete/athlete...') do
   system("printf 'y' | elm install elm/url &> /dev/null")
 end
 
+camelname = camelcase options[:name]
+
 show_and_do('Configuring package.json...') do
   elm_package_content =
     %({
