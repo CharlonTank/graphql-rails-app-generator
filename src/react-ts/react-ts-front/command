@@ -1,0 +1,25 @@
+npm init -y
+npm install --save-dev @types/react @types/react-dom awesome-typescript-loader css-loader html-webpack-plugin mini-css-extract-plugin source-map-loader typescript webpack webpack-cli webpack-dev-server
+npm install react react-dom
+touch webpack.config.js
+touch tsconfig.json
+mkdir src
+mkdir src/components
+touch src/components/index.html
+touch src/components/App.tsx
+touch src/index.tsx
+
+dans tsconfig.json ajouter le contenu actuel
+dans index.html ajouter le contenu actuel
+dans App.tsx ajouter le contenu actuel
+dans index.tsx ajouter le contenu actuel
+
+mkdir src/styles
+touch src/styles/app.css
+
+dans webpack.config.js ajouter le contenu actuel
+
+ajouter dans le package.json les scripts:
+    "start": "webpack-dev-server --open",
+    "build": "webpack"
+
