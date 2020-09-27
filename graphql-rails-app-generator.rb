@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 require 'optparse'
 require 'io/console'
-require_relative 'wait_for_it'
-require_relative 'utils'
+require_relative 'src/wait_for_it'
+require_relative 'src/utils'
 
 options = {}
-elm_boiler_plate = File.read('boiler_plate.elm')
+elm_boiler_plate = File.read('src/elm/boiler_plate.elm')
 abort = false
 
 OptionParser.new do |parser|
