@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 require 'optparse'
 require 'io/console'
 require_relative 'src/wait_for_it'
@@ -87,8 +89,8 @@ show_and_do('Creating database...') do
 end
 
 concatened_options = (options['--no-pg-uuid'] ? ' --no-pg-uuid' : '') +
-  (options['--no-action-cable-subs'] ? ' --no-action-cable-subs' : '') +
-  (options['--no-apollo-compatibility'] ? ' --no-apollo-compatibility' : '')
+                     (options['--no-action-cable-subs'] ? ' --no-action-cable-subs' : '') +
+                     (options['--no-apollo-compatibility'] ? ' --no-apollo-compatibility' : '')
 
 show_and_do("Installing graphql-rails-api#{concatened_options}...") do
   system('spring stop &> /dev/null')
@@ -133,16 +135,6 @@ show_and_do('Installing elm-athlete/athlete...') do
   system("printf 'y' | elm install elm/url &> /dev/null")
 end
 
-show_and_do('Installing dillonkearns/elm-graphql CLI...') do
-  system('npm install --save-dev @dillonkearns/elm-graphql &> /dev/null')
-end
-
-show_and_do('Installing elm-live CLI...') do
-  system('npm install --save-dev elm-live@next &> /dev/null')
-end
-
-camelname = camelcase options[:name]
-
 show_and_do('Configuring package.json...') do
   elm_package_content =
     %({
@@ -151,12 +143,20 @@ show_and_do('Configuring package.json...') do
   "scripts": {
     "api": "./node_modules/.bin/elm-graphql http://localhost:3000/graphql --base #{camelname}",
     "rails-graphql-api": "./node_modules/.bin/elm-graphql http://localhost:3123/graphql --base #{camelname}",
-    "live": "elm-live src/Main.elm -u --open",
-    "lived": "elm-live src/Main.elm -u --open -- --debug"
+    "live": "./node_modules/.bin/elm-live src/Main.elm -u --open",
+    "lived": "./node_modules/.bin/elm-live src/Main.elm -u --open -- --debug"
   }
 })
 
   File.open('package.json', 'w') { |f| f.write(elm_package_content) }
+end
+
+show_and_do('Installing dillonkearns/elm-graphql CLI...') do
+  system('npm install --save-dev @dillonkearns/elm-graphql &> /dev/null')
+end
+
+show_and_do('Installing elm-live CLI...') do
+  system('npm install --save-dev elm-live@next &> /dev/null')
 end
 
 show_and_do('Generating elm with dillonkearns/elm-graphql...') do
