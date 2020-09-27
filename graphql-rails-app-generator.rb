@@ -85,7 +85,23 @@ show_and_do('Adding graphql, graphql-rails-api and rack-cors to the Gemfile...')
 end
 
 show_and_do('Creating database...') do
-  system('rails db:create &> /dev/null')
+  if `rails db:create 2>&1`.include?'already exists'
+    puts "\nDatabases '#{options[:name]}_api_development' and '#{options[:name]}_api_test' already exist."
+    puts 'Do you want to drop and recreate the databases?'
+    puts 'Type Y to drop and recreate the DB, N to skip and continue the app generation, A to abort'
+    case yesno
+    when 't'
+      show_and_do("Dropping and recreating '#{options[:name]}_api_development' and '#{options[:name]}_api_test'") do
+        `rails db:drop &> /dev/null`
+        `rails db:create &> /dev/null`
+      end
+    when 'f' then break
+    when 'a' then
+      puts '...Aborting generation...'
+      return
+    else raise 'A problem occured, please try launching the script again'
+    end
+  end
 end
 
 concatened_options = (options['--no-pg-uuid'] ? ' --no-pg-uuid' : '') +
