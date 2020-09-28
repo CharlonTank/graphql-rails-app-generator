@@ -1,5 +1,15 @@
 npm init -y
-npm install --save-dev @types/react @types/react-dom awesome-typescript-loader css-loader html-webpack-plugin mini-css-extract-plugin source-map-loader typescript webpack webpack-cli webpack-dev-server
+npm install --save-dev @types/react
+npm install --save-dev @types/react-dom
+npm install --save-dev awesome-typescript-loader
+npm install --save-dev css-loader
+npm install --save-dev html-webpack-plugin
+npm install --save-dev mini-css-extract-plugin
+npm install --save-dev source-map-loader
+npm install --save-dev typescript
+npm install --save-dev webpack
+npm install --save-dev webpack-cli
+npm install --save-dev webpack-dev-server
 npm install react react-dom
 touch webpack.config.js
 touch tsconfig.json
@@ -21,5 +31,23 @@ dans webpack.config.js ajouter le contenu actuel
 
 ajouter dans le package.json les scripts:
     "start": "webpack-dev-server --open",
-    "build": "webpack"
+    "build": "webpack",
+    "generate": "graphql-codegen"
 
+----- INSTALL GRAPHQL AND GRAPHQL GENERATOR -----
+
+npm install graphql
+npm install -D @graphql-codegen/cli
+
+npm install --save-dev @graphql-codegen/typescript
+
+touch codegen.yml
+
+schema: http://localhost:3123/graphql
+generates:
+  ./src/types.d.ts:
+    plugins:
+      - typescript
+
+
+npm run generate
