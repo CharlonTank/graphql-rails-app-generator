@@ -76,10 +76,13 @@ clear_console
 if !options[:no_front] && options[:front].blank?
   loop do
     puts 'What is the frontend of your project?'
-    puts 'Only "elm" in supported now, otherwise type "s" to skip the front generation or "a" to abort'
+    puts 'Only "elm" and "typescript" are supported now, otherwise type "s" to skip the front generation or "a" to abort'
     case gets.chomp
     when 'elm' then
       options[:front] = 'elm'
+      break
+    when 'typescript', 'react' then
+      options[:front] = 'typescript'
       break
     when 's', 'S', 'skip' then
       options[:no_front] = true
@@ -99,7 +102,7 @@ clear_console
 puts options[:front] ? "#{options[:front]} choosen" : 'No front choosen'
 
 # API Generation
-show_and_do("Generating #{options[:name]} api...") do
+show_and_do("Generating #{options[:name]} api ...") do
   Dir.mkdir options[:name]
   Dir.chdir options[:name]
   `rails new #{options[:name]}-api --api --database=postgresql &> /dev/null`
@@ -112,7 +115,7 @@ show_and_do('Adding graphql, graphql-rails-api and rack-cors to the Gemfile...')
   `bundle add rack-cors &> /dev/null`
 end
 
-show_and_do('Creating database...') do
+show_and_do('Creating database ...') do
   if `rails db:create 2>&1`.include?'already exists'
     puts "\nDatabases '#{options[:name]}_api_development' and '#{options[:name]}_api_test' already exist."
     puts 'Do you want to drop and recreate the databases? [y/n/a]'
@@ -141,7 +144,7 @@ show_and_do("Installing graphql-rails-api#{concatened_options}...") do
   `rails generate graphql_rails_api:install #{concatened_options} &> /dev/null`
 end
 
-show_and_do('Installing Webpacker') do
+show_and_do('Installing Webpacker ...') do
   `spring stop &> /dev/null`
   `rails webpacker:install &> /dev/null`
 end
@@ -222,6 +225,194 @@ if !options[:no_front] && options[:front]
     show_and_do('Stopping rails server on port 3123...') do
       `lsof -i :3123 -sTCP:LISTEN | awk 'NR > 1 {print $2}' | xargs kill -9 &> /dev/null`
     end
+  elsif options[:front] == "typescript"
+    
+    show_and_do('Launch rails server on port 3123...') do
+      WaitForIt.new('rails s -p 3123', wait_for: 'Listening on tcp')
+    end
+
+    show_and_do("Generating #{options[:name]} front in react with typescript...") do
+      Dir.mkdir "../#{options[:name]}-front"
+      Dir.chdir "../#{options[:name]}-front"
+    end
+
+    show_and_do("Initialize package.json...") do
+      `npm init -y &> /dev/null`
+    end
+
+    show_and_do("Add @types/react and @types/react-dom...") do
+      `npm install --save-dev @types/react @types/react-dom &> /dev/null`
+    end
+
+    show_and_do("Add awesome-typescript-loader ...") do
+      `npm install --save-dev awesome-typescript-loader &> /dev/null`
+    end
+
+    show_and_do("Add css-loader ...") do
+      `npm install --save-dev css-loader &> /dev/null`
+    end
+
+    show_and_do("Add html-webpack-plugin ...") do
+      `npm install --save-dev html-webpack-plugin &> /dev/null`
+    end
+
+    show_and_do("Add mini-css-extract-plugin ...") do
+      `npm install --save-dev mini-css-extract-plugin &> /dev/null`
+    end
+
+    show_and_do("Add source-map-loader ...") do
+      `npm install --save-dev source-map-loader &> /dev/null`
+    end
+
+    show_and_do("Add typescript ...") do
+      `npm install --save-dev typescript &> /dev/null`
+    end
+
+    show_and_do("Add webpack, webpack-cli and webpack-dev-server ...") do
+      `npm install --save-dev webpack webpack-cli webpack-dev-server &> /dev/null`
+    end
+
+    show_and_do("Add react and react-dom ...") do
+      `npm install react react-dom &> /dev/null`
+    end
+
+    show_and_do("Construct project architecture ...") do
+        `touch webpack.config.js &> /dev/null`
+        `touch tsconfig.json &> /dev/null`
+        `mkdir src &> /dev/null`
+        `mkdir src/components &> /dev/null`
+        `touch src/components/index.html &> /dev/null`
+        `touch src/components/App.tsx &> /dev/null`
+        `touch src/index.tsx &> /dev/null`
+        `mkdir src/styles &> /dev/null`
+        `touch src/styles/app.css &> /dev/null`
+    end
+
+    show_and_do('Configuring tsconfig content') do
+      tsconfig_content = 
+        %({
+  "compilerOptions": {
+    "jsx": "react",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "outDir": "./build/",
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "target": "es5"
+  },
+    "include": [
+      "src/components/index.tsx"
+    ]
+})
+
+        File.open('tsconfig.json', 'w') { |f| f.write(tsconfig_content) }
+    end
+    
+    show_and_do('Configuring App.tsx content') do
+      app_tsx_content = 
+        %(import * as React from "react";
+export interface HelloWorldProps {
+  userName: string;
+  lang: string;
+}
+export const App = (props: HelloWorldProps) => (
+  <h1>
+    Hi {props.userName} from React! Welcome to {props.lang}!
+  </h1>
+);
+        )
+
+        File.open('./src/components/App.js', 'w') { |f| f.write(app_tsx_content) }
+    end
+
+    show_and_do('Configuring index.html content') do
+      index_html_content = 
+        %(<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React-Webpack Setup</title>
+</head>
+
+<body>
+    <div id="app"></div>
+</body>
+
+</html>
+        )
+
+        File.open('./src/components/index.html', 'w') { |f| f.write(index_html_content) }
+    end
+
+    show_and_do('Configuring index.tsx content') do
+      index_tsx_content = 
+        %(import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { App } from "./components/App";
+
+ReactDOM.render(
+  <App userName="Beveloper" lang="TypeScript" />,
+  document.getElementById("app")
+);          
+        )
+
+        File.open('./src/index.tsx', 'w') { |f| f.write(index_tsx_content) }
+    end
+
+    show_and_do('Configuring package.json content') do
+      file = IO.read("package.json")
+      file = file.gsub("\"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"", "\"start\": \"webpack-dev-server --open\",\n    \"build\": \"webpack\",\n    \"generate\": \"graphql-codegen\"")
+      File.write("package.json", file)
+    end
+
+    show_and_do('Configuring webpack content...') do
+      webpack_config_content =
+        %(const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+module.exports = {
+  entry: "./src/index.tsx",
+  target: "web",
+  mode: "development",
+  output: {
+    path: path.resolve(__dirname, "build"),
+    filename: "bundle.js",
+  },
+  resolve: {
+    extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(ts|tsx)$/,
+        loader: "awesome-typescript-loader",
+      },
+      {
+        enforce: "pre",
+        test: /\.js$/,
+        loader: "source-map-loader",
+      },
+      {
+        test: /\.css$/,
+        loader: "css-loader",
+      },
+    ],
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, "src", "components", "index.html"),
+    }),
+    new MiniCssExtractPlugin({
+      filename: "./src/styles/app.css",
+    }),
+  ],
+};)
+
+      File.open('webpack.config.js', 'w') { |f| f.write(webpack_config_content) }
+    end
   end
 end
 
@@ -229,9 +420,13 @@ puts "\nSuccessful installation!".green
 
 if options[:no_front]
   puts 'You can now, run your rails server:'.green
-  puts '  rails s'.blue + " in #{options[:name]}-api".green
-else
+  puts '  rails s'.yellow + " in #{options[:name]}-api".green
+elsif options[:front] == 'elm'
   puts 'You can now, run your rails server and front server:'.green
-  puts '  rails s'.blue + " in #{options[:name]}-api".green
-  puts '  npm run live'.blue + " in #{options[:name]}-front".green
+  puts '  rails s'.yellow + " in #{options[:name]}-api".green
+  puts '  npm run live'.yellow + " in #{options[:name]}-front".green
+elsif options[:front] == 'typescript'
+  puts 'You can now, run your rails server and front server:'.green
+  puts '  rails s'.yellow + " in #{options[:name]}-api".green
+  puts '  npm start'.yellow + " in #{options[:name]}-front".green
 end

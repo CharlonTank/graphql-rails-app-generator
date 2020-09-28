@@ -1,5 +1,5 @@
 def show_and_do(str)
-  print str.yellow
+  print str
   show_wait_spinner do
     yield
   end
