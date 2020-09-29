@@ -76,12 +76,12 @@ clear_console
 if !options[:no_front] && options[:front].blank?
   loop do
     puts 'What is the frontend of your project?'
-    puts 'Only "elm" and "typescript" are supported now, otherwise type "s" to skip the front generation or "a" to abort'
+    puts 'Only "elm" and "ts" are supported now, otherwise type "s" to skip the front generation or "a" to abort'
     case gets.chomp
     when 'elm' then
       options[:front] = 'elm'
       break
-    when 'typescript', 'react' then
+    when 'ts', 'react' then
       options[:front] = 'typescript'
       break
     when 's', 'S', 'skip' then
@@ -108,7 +108,7 @@ show_and_do("Generating #{options[:name]} api ...") do
   `rails new #{options[:name]}-api --api --database=postgresql &> /dev/null`
 end
 
-show_and_do('Adding graphql, graphql-rails-api and rack-cors to the Gemfile...') do
+show_and_do('Adding graphql, graphql-rails-api and rack-cors to the Gemfile ...') do
   Dir.chdir options[:name] + '-api'
   `bundle add graphql --skip-install &> /dev/null`
   `bundle add graphql-rails-api --skip-install &> /dev/null`
@@ -139,7 +139,7 @@ concatened_options = (options['--no-pg-uuid'] ? ' --no-pg-uuid' : '') +
                      (options['--no-action-cable-subs'] ? ' --no-action-cable-subs' : '') +
                      (options['--no-apollo-compatibility'] ? ' --no-apollo-compatibility' : '')
 
-show_and_do("Installing graphql-rails-api#{concatened_options}...") do
+show_and_do("Installing graphql-rails-api#{concatened_options} ...") do
   `spring stop &> /dev/null`
   `rails generate graphql_rails_api:install #{concatened_options} &> /dev/null`
 end
@@ -149,7 +149,7 @@ show_and_do('Installing Webpacker ...') do
   `rails webpacker:install &> /dev/null`
 end
 
-show_and_do('Configuring cors (Cross-Origin Resource Sharing)...') do
+show_and_do('Configuring cors (Cross-Origin Resource Sharing) ...') do
   cors_content =
     %(Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
@@ -167,22 +167,22 @@ if !options[:no_front] && options[:front]
 
     elm_boiler_plate = File.read('../../src/elm/boiler_plate.elm')
 
-    show_and_do('Launch rails server on port 3123...') do
+    show_and_do('Launch rails server on port 3123 ...') do
       WaitForIt.new('rails s -p 3123', wait_for: 'Listening on tcp')
     end
 
-    show_and_do("Generating #{options[:name]} front in elm...") do
+    show_and_do("Generating #{options[:name]} front in elm ...") do
       Dir.mkdir "../#{options[:name]}-front"
       Dir.chdir "../#{options[:name]}-front"
       `printf 'y' | elm init &> /dev/null`
     end
 
-    show_and_do('Installing dillonkearns/elm-graphql...') do
+    show_and_do('Installing dillonkearns/elm-graphql ...') do
       `printf 'y' | elm install dillonkearns/elm-graphql &> /dev/null`
       `printf 'y' | elm install elm/json &> /dev/null`
     end
 
-    show_and_do('Installing elm-athlete/athlete...') do
+    show_and_do('Installing elm-athlete/athlete ...') do
       `printf 'y' | elm install elm-athlete/athlete &> /dev/null`
       `printf 'y' | elm install elm/time &> /dev/null`
       `printf 'y' | elm install elm/url &> /dev/null`
@@ -190,7 +190,7 @@ if !options[:no_front] && options[:front]
 
     camelname = camelcase options[:name]
 
-    show_and_do('Configuring package.json...') do
+    show_and_do('Configuring package.json ...') do
       elm_package_content =
         %({
       "name": "#{options[:name]}",
@@ -206,32 +206,32 @@ if !options[:no_front] && options[:front]
       File.open('package.json', 'w') { |f| f.write(elm_package_content) }
     end
 
-    show_and_do('Installing dillonkearns/elm-graphql CLI...') do
+    show_and_do('Installing dillonkearns/elm-graphql CLI ...') do
       `npm install --save-dev @dillonkearns/elm-graphql &> /dev/null`
     end
 
-    show_and_do('Installing elm-live CLI...') do
+    show_and_do('Installing elm-live CLI ...') do
       `npm install --save-dev elm-live@next &> /dev/null`
     end
 
-    show_and_do('Generating elm with dillonkearns/elm-graphql...') do
+    show_and_do('Generating elm with dillonkearns/elm-graphql ...') do
       `npm run rails-graphql-api &> /dev/null`
     end
 
-    show_and_do('Copying boiler_plate.elm...') do
+    show_and_do('Copying boiler_plate.elm ...') do
       File.open('src/Main.elm', 'w') { |f| f.write(elm_boiler_plate) }
     end
 
-    show_and_do('Stopping rails server on port 3123...') do
+    show_and_do('Stopping rails server on port 3123 ...') do
       `lsof -i :3123 -sTCP:LISTEN | awk 'NR > 1 {print $2}' | xargs kill -9 &> /dev/null`
     end
   elsif options[:front] == "typescript"
     
-    show_and_do('Launch rails server on port 3123...') do
+    show_and_do('Launch rails server on port 3123 ...') do
       WaitForIt.new('rails s -p 3123', wait_for: 'Listening on tcp')
     end
 
-    show_and_do("Generating #{options[:name]} front in react with typescript...") do
+    show_and_do("Generating #{options[:name]} front in react with typescript ...") do
       Dir.mkdir "../#{options[:name]}-front"
       Dir.chdir "../#{options[:name]}-front"
     end
@@ -288,7 +288,7 @@ if !options[:no_front] && options[:front]
         `touch src/styles/app.css &> /dev/null`
     end
 
-    show_and_do('Configuring tsconfig content') do
+    show_and_do('Configuring tsconfig content ...') do
       tsconfig_content = 
         %({
   "compilerOptions": {
@@ -308,9 +308,9 @@ if !options[:no_front] && options[:front]
 
         File.open('tsconfig.json', 'w') { |f| f.write(tsconfig_content) }
     end
-    
-    show_and_do('Configuring App.tsx content') do
-      app_tsx_content = 
+
+    show_and_do('Configuring App.tsx content ...') do
+      app_tsx_ ... = 
         %(import * as React from "react";
 export interface HelloWorldProps {
   userName: string;
@@ -318,15 +318,15 @@ export interface HelloWorldProps {
 }
 export const App = (props: HelloWorldProps) => (
   <h1>
-    Hi {props.userName} from React! Welcome to {props.lang}!
+    Hi {props.userName} ! Welcome to {props.lang} !
   </h1>
 );
         )
 
-        File.open('./src/components/App.js', 'w') { |f| f.write(app_tsx_content) }
+        File.open('./src/components/App.tsx', 'w') { |f| f.write(app_tsx_content) }
     end
 
-    show_and_do('Configuring index.html content') do
+    show_and_do('Configuring index.html content ...') do
       index_html_content = 
         %(<!DOCTYPE html>
 <html lang="en">
@@ -347,14 +347,14 @@ export const App = (props: HelloWorldProps) => (
         File.open('./src/components/index.html', 'w') { |f| f.write(index_html_content) }
     end
 
-    show_and_do('Configuring index.tsx content') do
+    show_and_do('Configuring index.tsx content ...') do
       index_tsx_content = 
         %(import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { App } from "./components/App";
 
 ReactDOM.render(
-  <App userName="Beveloper" lang="TypeScript" />,
+  <App userName="folks" lang="TypeScript" />,
   document.getElementById("app")
 );          
         )
@@ -362,13 +362,13 @@ ReactDOM.render(
         File.open('./src/index.tsx', 'w') { |f| f.write(index_tsx_content) }
     end
 
-    show_and_do('Configuring package.json content') do
+    show_and_do('Configuring package.json content ...') do
       file = IO.read("package.json")
       file = file.gsub("\"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"", "\"start\": \"webpack-dev-server --open\",\n    \"build\": \"webpack\",\n    \"generate\": \"graphql-codegen\"")
       File.write("package.json", file)
     end
 
-    show_and_do('Configuring webpack content...') do
+    show_and_do('Configuring webpack content ...') do
       webpack_config_content =
         %(const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -412,6 +412,38 @@ module.exports = {
 };)
 
       File.open('webpack.config.js', 'w') { |f| f.write(webpack_config_content) }
+    end
+
+    show_and_do('Installing graphql ...') do
+      `npm install graphql &> /dev/null`
+    end
+
+    show_and_do('Installing @graphql-codegen/cli ...') do
+      `npm install --save-dev @graphql-codegen/cli &> /dev/null`
+    end
+
+    show_and_do('Installing @graphql-codegen/typescript ...') do
+      `npm install --save-dev @graphql-codegen/typescript &> /dev/null`
+    end
+
+    show_and_do('Configuring codegen.yml content ...') do
+      `touch codegen.yml &> /dev/null`
+      codegen_content = %(schema: http://localhost:3123/graphql
+  generates:
+    ./src/types.d.ts:
+      plugins:
+        - typescript     
+      )
+
+      File.open("codegen.yml", "w") { |f| f.write(codegen_content) }
+    end
+
+    show_and_do('Run graphql_codegen ...') do
+      `npm run generate`
+    end
+
+    show_and_do('Stopping rails server on port 3123 ...') do
+      `lsof -i :3123 -sTCP:LISTEN | awk 'NR > 1 {print $2}' | xargs kill -9 &> /dev/null`
     end
   end
 end
