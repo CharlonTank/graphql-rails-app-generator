@@ -240,43 +240,43 @@ if !options[:no_front] && options[:front]
       `npm init -y &> /dev/null`
     end
 
-    show_and_do("Add @types/react and @types/react-dom...") do
+    show_and_do("Installing @types/react and @types/react-dom...") do
       `npm install --save-dev @types/react @types/react-dom &> /dev/null`
     end
 
-    show_and_do("Add awesome-typescript-loader ...") do
+    show_and_do("Installing awesome-typescript-loader ...") do
       `npm install --save-dev awesome-typescript-loader &> /dev/null`
     end
 
-    show_and_do("Add css-loader ...") do
+    show_and_do("Installing css-loader ...") do
       `npm install --save-dev css-loader &> /dev/null`
     end
 
-    show_and_do("Add html-webpack-plugin ...") do
+    show_and_do("Installing html-webpack-plugin ...") do
       `npm install --save-dev html-webpack-plugin &> /dev/null`
     end
 
-    show_and_do("Add mini-css-extract-plugin ...") do
+    show_and_do("Installing mini-css-extract-plugin ...") do
       `npm install --save-dev mini-css-extract-plugin &> /dev/null`
     end
 
-    show_and_do("Add source-map-loader ...") do
+    show_and_do("Installing source-map-loader ...") do
       `npm install --save-dev source-map-loader &> /dev/null`
     end
 
-    show_and_do("Add typescript ...") do
+    show_and_do("Installing typescript ...") do
       `npm install --save-dev typescript &> /dev/null`
     end
 
-    show_and_do("Add webpack, webpack-cli and webpack-dev-server ...") do
+    show_and_do("Installing webpack, webpack-cli and webpack-dev-server ...") do
       `npm install --save-dev webpack webpack-cli webpack-dev-server &> /dev/null`
     end
 
-    show_and_do("Add react and react-dom ...") do
+    show_and_do("Installing react and react-dom ...") do
       `npm install react react-dom &> /dev/null`
     end
 
-    show_and_do("Construct project architecture ...") do
+    show_and_do("Preparing project architecture ...") do
         `touch webpack.config.js &> /dev/null`
         `touch tsconfig.json &> /dev/null`
         `mkdir src &> /dev/null`
@@ -310,7 +310,7 @@ if !options[:no_front] && options[:front]
     end
 
     show_and_do('Configuring App.tsx content ...') do
-      app_tsx_ ... = 
+      app_tsx_content = 
         %(import * as React from "react";
 export interface HelloWorldProps {
   userName: string;
@@ -419,11 +419,11 @@ module.exports = {
     end
 
     show_and_do('Installing @graphql-codegen/cli ...') do
-      `npm install --save-dev @graphql-codegen/cli &> /dev/null`
+      `npm install --save-dev @graphql-codegen/cli`
     end
 
     show_and_do('Installing @graphql-codegen/typescript ...') do
-      `npm install --save-dev @graphql-codegen/typescript &> /dev/null`
+      `npm install --save-dev @graphql-codegen/typescript`
     end
 
     show_and_do('Configuring codegen.yml content ...') do
