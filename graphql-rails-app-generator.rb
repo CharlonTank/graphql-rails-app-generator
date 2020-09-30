@@ -429,11 +429,10 @@ module.exports = {
     show_and_do('Configuring codegen.yml content ...') do
       `touch codegen.yml &> /dev/null`
       codegen_content = %(schema: http://localhost:3123/graphql
-  generates:
-    ./src/types.d.ts:
-      plugins:
-        - typescript     
-      )
+generates:
+  ./src/types.d.ts:
+    plugins:
+      - typescript)
 
       File.open("codegen.yml", "w") { |f| f.write(codegen_content) }
     end
