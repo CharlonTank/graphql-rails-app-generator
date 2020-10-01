@@ -232,186 +232,23 @@ if !options[:no_front] && options[:front]
     end
 
     show_and_do("Generating #{options[:name]} front in react with typescript ...") do
-      Dir.mkdir "../#{options[:name]}-front"
-      Dir.chdir "../#{options[:name]}-front"
-    end
-
-    show_and_do("Initialize package.json...") do
-      `npm init -y &> /dev/null`
-    end
-
-    show_and_do("Installing @types/react and @types/react-dom...") do
-      `npm install --save-dev @types/react @types/react-dom &> /dev/null`
-    end
-
-    show_and_do("Installing awesome-typescript-loader ...") do
-      `npm install --save-dev awesome-typescript-loader &> /dev/null`
-    end
-
-    show_and_do("Installing css-loader ...") do
-      `npm install --save-dev css-loader &> /dev/null`
-    end
-
-    show_and_do("Installing html-webpack-plugin ...") do
-      `npm install --save-dev html-webpack-plugin &> /dev/null`
-    end
-
-    show_and_do("Installing mini-css-extract-plugin ...") do
-      `npm install --save-dev mini-css-extract-plugin &> /dev/null`
-    end
-
-    show_and_do("Installing source-map-loader ...") do
-      `npm install --save-dev source-map-loader &> /dev/null`
+      Dir.chdir "../"
+      `npx create-react-app #{options[:name]}-front --template typescript &> /dev/null`
+      Dir.chdir "#{options[:name]}-front"
     end
 
     show_and_do("Installing typescript ...") do
-      `npm install --save-dev typescript &> /dev/null`
+      `npm install --save typescript &> /dev/null`
     end
 
-    show_and_do("Installing webpack, webpack-cli and webpack-dev-server ...") do
-      `npm install --save-dev webpack webpack-cli webpack-dev-server &> /dev/null`
-    end
-
-    show_and_do("Installing react and react-dom ...") do
-      `npm install react react-dom &> /dev/null`
-    end
-
-    show_and_do("Preparing project architecture ...") do
-        `touch webpack.config.js &> /dev/null`
-        `touch tsconfig.json &> /dev/null`
-        `mkdir src &> /dev/null`
-        `mkdir src/components &> /dev/null`
-        `touch src/components/index.html &> /dev/null`
-        `touch src/components/App.tsx &> /dev/null`
-        `touch src/index.tsx &> /dev/null`
-        `mkdir src/styles &> /dev/null`
-        `touch src/styles/app.css &> /dev/null`
-    end
-
-    show_and_do('Configuring tsconfig content ...') do
-      tsconfig_content = 
-        %({
-  "compilerOptions": {
-    "jsx": "react",
-    "module": "commonjs",
-    "noImplicitAny": true,
-    "outDir": "./build/",
-    "preserveConstEnums": true,
-    "removeComments": true,
-    "sourceMap": true,
-    "target": "es5"
-  },
-    "include": [
-      "src/components/index.tsx"
-    ]
-})
-
-        File.open('tsconfig.json', 'w') { |f| f.write(tsconfig_content) }
-    end
-
-    show_and_do('Configuring App.tsx content ...') do
-      app_tsx_content = 
-        %(import * as React from "react";
-export interface HelloWorldProps {
-  userName: string;
-  lang: string;
-}
-export const App = (props: HelloWorldProps) => (
-  <h1>
-    Hi {props.userName} ! Welcome to {props.lang} !
-  </h1>
-);
-        )
-
-        File.open('./src/components/App.tsx', 'w') { |f| f.write(app_tsx_content) }
-    end
-
-    show_and_do('Configuring index.html content ...') do
-      index_html_content = 
-        %(<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>React-Webpack Setup</title>
-</head>
-
-<body>
-    <div id="app"></div>
-</body>
-
-</html>
-        )
-
-        File.open('./src/components/index.html', 'w') { |f| f.write(index_html_content) }
-    end
-
-    show_and_do('Configuring index.tsx content ...') do
-      index_tsx_content = 
-        %(import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { App } from "./components/App";
-
-ReactDOM.render(
-  <App userName="folks" lang="TypeScript" />,
-  document.getElementById("app")
-);          
-        )
-
-        File.open('./src/index.tsx', 'w') { |f| f.write(index_tsx_content) }
+    show_and_do("Installing @types/react @types/react-dom @types/jest @types/node ...") do
+      `npm install --save @types/node @types/react @types/react-dom @types/jest &> /dev/null`
     end
 
     show_and_do('Configuring package.json content ...') do
       file = IO.read("package.json")
-      file = file.gsub("\"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"", "\"start\": \"webpack-dev-server --open\",\n    \"build\": \"webpack\",\n    \"generate\": \"graphql-codegen\"")
+      file = file.gsub("\"scripts\": {\n    \"start\": \"react-scripts start\",\n    \"build\": \"react-scripts build\",\n    \"test\": \"react-scripts test\",\n    \"eject\": \"react-scripts eject\"", "\"scripts\": {\n    \"start\": \"react-scripts start\",\n    \"build\": \"react-scripts build\",\n    \"test\": \"react-scripts test\",\n    \"eject\": \"react-scripts eject\",\n    \"generate\": \"graphql-codegen\"")
       File.write("package.json", file)
-    end
-
-    show_and_do('Configuring webpack content ...') do
-      webpack_config_content =
-        %(const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-module.exports = {
-  entry: "./src/index.tsx",
-  target: "web",
-  mode: "development",
-  output: {
-    path: path.resolve(__dirname, "build"),
-    filename: "bundle.js",
-  },
-  resolve: {
-    extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
-  },
-  module: {
-    rules: [
-      {
-        test: /\.(ts|tsx)$/,
-        loader: "awesome-typescript-loader",
-      },
-      {
-        enforce: "pre",
-        test: /\.js$/,
-        loader: "source-map-loader",
-      },
-      {
-        test: /\.css$/,
-        loader: "css-loader",
-      },
-    ],
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, "src", "components", "index.html"),
-    }),
-    new MiniCssExtractPlugin({
-      filename: "./src/styles/app.css",
-    }),
-  ],
-};)
-
-      File.open('webpack.config.js', 'w') { |f| f.write(webpack_config_content) }
     end
 
     show_and_do('Installing graphql ...') do
@@ -419,11 +256,11 @@ module.exports = {
     end
 
     show_and_do('Installing @graphql-codegen/cli ...') do
-      `npm install --save-dev @graphql-codegen/cli`
+      `npm install --save-dev @graphql-codegen/cli &> /dev/null`
     end
 
     show_and_do('Installing @graphql-codegen/typescript ...') do
-      `npm install --save-dev @graphql-codegen/typescript`
+      `npm install --save-dev @graphql-codegen/typescript &> /dev/null`
     end
 
     show_and_do('Configuring codegen.yml content ...') do
@@ -438,7 +275,7 @@ generates:
     end
 
     show_and_do('Run graphql_codegen ...') do
-      `npm run generate`
+      `npm run generate &> /dev/null`
     end
 
     show_and_do('Stopping rails server on port 3123 ...') do
@@ -458,6 +295,6 @@ elsif options[:front] == 'elm'
   puts '  npm run live'.yellow + " in #{options[:name]}-front".green
 elsif options[:front] == 'typescript'
   puts 'You can now, run your rails server and front server:'.green
-  puts '  rails s'.yellow + " in #{options[:name]}-api".green
+  puts '  rails s -p 3123'.yellow + " in #{options[:name]}-api".green
   puts '  npm start'.yellow + " in #{options[:name]}-front".green
 end
