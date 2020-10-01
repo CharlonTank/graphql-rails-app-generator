@@ -268,6 +268,10 @@ if !options[:no_front] && options[:front]
       `npm install --save-dev typescript &> /dev/null`
     end
 
+    show_and_do("Installing @types/jest and @types/node ...") do
+      `npm install --save-dev @types/jest @types/node &> /dev/null`
+    end
+
     show_and_do("Installing webpack, webpack-cli and webpack-dev-server ...") do
       `npm install --save-dev webpack webpack-cli webpack-dev-server &> /dev/null`
     end
@@ -419,11 +423,11 @@ module.exports = {
     end
 
     show_and_do('Installing @graphql-codegen/cli ...') do
-      `npm install --save-dev @graphql-codegen/cli`
+      `npm install --save-dev @graphql-codegen/cli &> /dev/null`
     end
 
     show_and_do('Installing @graphql-codegen/typescript ...') do
-      `npm install --save-dev @graphql-codegen/typescript`
+      `npm install --save-dev @graphql-codegen/typescript &> /dev/null`
     end
 
     show_and_do('Configuring codegen.yml content ...') do
