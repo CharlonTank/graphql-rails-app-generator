@@ -238,7 +238,7 @@ if !options[:no_front] && options[:front]
     end
 
     show_and_do("Installing typescript ...") do
-      `npm install --save typescript &> /dev/null`
+      `npm install --save typescript@4.0 &> /dev/null`
     end
 
     show_and_do("Installing @types/react @types/react-dom @types/jest @types/node ...") do
